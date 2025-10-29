@@ -1,0 +1,8 @@
+kvalog provides CMake targets:
+
+    find_package(kvalog CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE kvalog::kvalog)
+
+For direct header inclusion:
+
+    #include <kvalog/kvalog.hpp>
