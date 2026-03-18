@@ -1,0 +1,11 @@
+Library doca-cpp requires NVIDIA DOCA SDK v3.2.0 installation
+and was tested only on Linux Ubuntu 24.04 Kernel 6.8.0-31
+
+Library doca-cpp provides CMake targets:
+
+    find_package(doca-cpp CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE doca-cpp::doca-cpp)
+
+For direct header inclusion:
+
+    #include <doca-cpp/core/device.hpp>
