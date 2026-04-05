@@ -1,6 +1,6 @@
 {
     "name": "kvalog",
-    "version": "0.1.2",
+    "version": "0.2.0",
     "description": "Unified logging wrapper for different formats and targets",
     "homepage": "https://github.com/fogesque/kvalog",
     "license": "MIT",
