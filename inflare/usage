@@ -1,0 +1,11 @@
+Library Inflare requires NVIDIA DOCA SDK v3.2.0 installation
+and was tested only on Linux Ubuntu 24.04 Kernel 6.8.0-31
+
+Library Inflare provides CMake targets:
+
+    find_package(inflare CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE inflare::inflare)
+
+For direct header inclusion:
+
+    #include <inflare/core/device.hpp>

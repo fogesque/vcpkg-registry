@@ -1,8 +1,8 @@
 {
-    "name": "doca-cpp",
-    "version": "0.1.4",
-    "description": "C++ Adapter For NVIDIA DOCA Framework. Requires NVIDIA DOCA SDK installed on the system (https://developer.nvidia.com/networking/doca).",
-    "homepage": "https://github.com/fogesque/doca-cpp",
+    "name": "inflare",
+    "version": "0.2.0",
+    "description": "RDMA Streaming C++ Library. Requires NVIDIA DOCA SDK installed on the system (https://developer.nvidia.com/networking/doca).",
+    "homepage": "https://github.com/fogesque/inflare",
     "license": "MIT",
     "supports": "linux",
     "dependencies": [
