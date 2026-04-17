@@ -1,80 +1,63 @@
-# vcpkg-ports
+# vcpkg-registry
 
-Personal vcpkg overlay ports for custom C++ libraries.
+Private vcpkg registry for the [fogesque](https://github.com/fogesque) C++ packages.
 
-## Prerequisites
+## Ports
 
-- [vcpkg](https://github.com/microsoft/vcpkg) installed and set up
-- CMake 3.20 or higher
-- C++23 compatible compiler
+| Port | Version | Description |
+|------|---------|-------------|
+| [errors](ports/errors/) | 1.0.2 | C++ errors library inspired by Go's error concept |
+| [kvalog](ports/kvalog/) | 0.2.0 | Unified logging wrapper for different formats and targets |
+| [inflare](ports/inflare/) | 0.2.1 | RDMA streaming library targeting NVIDIA ConnectX SmartNICs via DOCA SDK |
 
 ## Usage
 
-Install any port from this repository using the `--overlay-ports` flag:
-
-```bash
-vcpkg install <port-name> --overlay-ports=/path/to/vcpkg-ports
-```
-
-For projects using vcpkg manifest mode, add this repository as an overlay in your `vcpkg-configuration.json`:
+Add this registry to your project's `vcpkg-configuration.json`:
 
 ```json
 {
-  "overlay-ports": [
-    "path/to/vcpkg-ports"
-  ]
+    "default-registry": {
+        "kind": "git",
+        "baseline": "<microsoft-vcpkg-baseline>",
+        "repository": "https://github.com/microsoft/vcpkg"
+    },
+    "registries": [
+        {
+            "kind": "git",
+            "repository": "https://github.com/fogesque/vcpkg-registry.git",
+            "baseline": "<registry-commit-sha>",
+            "packages": ["errors", "kvalog", "inflare"]
+        }
+    ]
 }
 ```
 
-Then reference the `<port-name>` in your project's `vcpkg.json`:
+Then declare dependencies in your `vcpkg.json`:
 
 ```json
 {
-  "dependencies": [
-    "<port-name>"
-  ]
+    "dependencies": ["inflare"]
 }
 ```
 
-## Available Ports
+For the GPU variant of inflare:
 
-## errors
-
-**Version:** 1.0.2
-**Repository:** [fogesque/errors](https://github.com/fogesque/errors)
-**License:** MIT
-
-C++ errors library inspired by Go's error concept. Provides a simple and expressive way to create, wrap, and handle errors in C++ applications.
-
-**Installation:**
-```bash
-vcpkg install errors --overlay-ports=/path/to/vcpkg-ports
+```json
+{
+    "dependencies": [
+        { "name": "inflare", "features": ["gpunetio"] }
+    ]
+}
 ```
 
-**CMake Integration:**
+Then in CMake:
+
 ```cmake
-find_package(errors CONFIG REQUIRED)
-target_link_libraries(your_target PRIVATE errors::errors)
+find_package(inflare REQUIRED)
+target_link_libraries(my_target PRIVATE inflare::inflare)
 ```
 
-**Usage Example:**
-```cpp
-#include <errors/errors.hpp>
+## Notes
 
-auto err = errors::New("something went wrong");
-if (err) {
-    // Handle error
-}
-```
-
----
-
-## Other Ports Coming Soon
-
-Upcoming libraries to be ported:
-* kvalog
-* doca-cpp
-
-## Contributing
-
-This is a personal repository for custom vcpkg ports. If you're using these ports and encounter issues, please open an issue in the respective library's repository.
+- `inflare` requires the [NVIDIA DOCA SDK](https://developer.nvidia.com/networking/doca) installed on the system — it is a hardware SDK that vcpkg cannot install.
+- The `gpunetio` feature additionally requires CUDA 13+ and a DOCA GPUNetIO-capable NIC.
