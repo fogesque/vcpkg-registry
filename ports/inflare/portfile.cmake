@@ -2,13 +2,19 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO fogesque/inflare
     REF v${VERSION}
-    SHA512 aee6951c9348c99ce7971facfb04ed3ccc472f3dad2c17b764470ab8a4409cf64789b00d0317ecc7f2aefaf97455f61f1e8a31327abe4dc558db8d44a007f7c1
+    SHA512 0
     HEAD_REF main
 )
+
+vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS                                                                                                                                                                                                    
+    FEATURES
+        gpunetio BUILD_GPUNETIO                                                                                                                                                                                                                             
+) 
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
+        ${FEATURE_OPTIONS}
         -DBUILD_TESTS=OFF
         -DBUILD_SAMPLES=OFF
 )

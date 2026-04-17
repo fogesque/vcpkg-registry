@@ -1,6 +1,6 @@
 {
     "name": "inflare",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "RDMA Streaming C++ Library. Requires NVIDIA DOCA SDK installed on the system (https://developer.nvidia.com/networking/doca).",
     "homepage": "https://github.com/fogesque/inflare",
     "license": "MIT",
@@ -25,17 +25,8 @@
         }
     ],
     "features": {
-        "testing": {
-            "description": "Build tests",
-            "dependencies": [
-                "gtest"
-            ]
-        },
-        "samples": {
-            "description": "Build examples",
-            "dependencies": [
-                "yaml-cpp"
-            ]
+        "gpunetio": {
+            "description": "Build GPU RDMA streaming module (requires CUDA 13+ and DOCA GPUNetIO)"
         }
     }
 }
