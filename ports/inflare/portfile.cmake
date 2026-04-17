@@ -4,6 +4,7 @@ vcpkg_from_github(
     REF v${VERSION}
     SHA512 0
     HEAD_REF main
+    AUTHORIZATION_TOKEN "$ENV{INFLARE_GITHUB_TOKEN}"
 )
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS                                                                                                                                                                                                    

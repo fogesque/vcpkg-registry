@@ -89,3 +89,29 @@ Examples: `errors` → `e-/errors.json`, `kvalog` → `k-/kvalog.json`.
 
 `port-version` is incremented (0 → 1 → 2 …) when the port files change but the
 upstream source version does not. Reset it to 0 whenever the upstream `version` bumps.
+
+---
+
+## Authentication for private ports
+
+`inflare` is hosted in a private GitHub repository. vcpkg fetches it using a GitHub
+Personal Access Token with `repo` scope, read from the environment variable
+`INFLARE_GITHUB_TOKEN`.
+
+**Local development:**
+
+```bash
+export INFLARE_GITHUB_TOKEN=<your-pat>
+cmake --preset ...
+```
+
+**GitHub Actions:**
+
+Store the token as a repository secret, then pass it to the build step:
+
+```yaml
+- name: Configure
+  env:
+    INFLARE_GITHUB_TOKEN: ${{ secrets.INFLARE_GITHUB_TOKEN }}
+  run: cmake --preset ...
+```
