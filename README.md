@@ -8,7 +8,7 @@ Private vcpkg registry for the [fogesque](https://github.com/fogesque) C++ packa
 |------|---------|-------------|
 | [errors](ports/errors/) | 1.0.2 | C++ errors library inspired by Go's error concept |
 | [kvalog](ports/kvalog/) | 0.2.0 | Unified logging wrapper for different formats and targets |
-| [inflare](ports/inflare/) | 0.2.1 | RDMA streaming library targeting NVIDIA ConnectX SmartNICs via DOCA SDK |
+| [inflare](ports/inflare/) | 0.2.2 | RDMA streaming library targeting NVIDIA ConnectX SmartNICs via DOCA SDK |
 
 ## Usage
 

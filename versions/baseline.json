@@ -1,7 +1,16 @@
 {
     "default": {
-        "errors": { "baseline": "1.0.2", "port-version": 0 },
-        "kvalog": { "baseline": "0.2.0", "port-version": 0 },
-        "inflare": { "baseline": "0.2.1", "port-version": 1 }
+        "errors": {
+            "baseline": "1.0.2",
+            "port-version": 0
+        },
+        "kvalog": {
+            "baseline": "0.2.0",
+            "port-version": 0
+        },
+        "inflare": {
+            "baseline": "0.2.2",
+            "port-version": 2
+        }
     }
 }
