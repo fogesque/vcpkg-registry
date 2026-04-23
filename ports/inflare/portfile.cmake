@@ -1,10 +1,8 @@
-vcpkg_from_github(
+vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO fogesque/inflare
-    REF v${VERSION}
-    SHA512 0
+    URL "https://github.com/fogesque/inflare"
+    REF "v${VERSION}"
     HEAD_REF main
-    AUTHORIZATION_TOKEN "$ENV{INFLARE_GITHUB_TOKEN}"
 )
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS                                                                                                                                                                                                    
