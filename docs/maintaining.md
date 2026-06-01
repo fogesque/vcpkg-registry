@@ -8,9 +8,15 @@ Example: bumping inflare from 0.2.1 to 0.2.2.
 
 Edit `ports/inflare/vcpkg.json` — bump the `version` field.
 
-Edit `ports/inflare/portfile.cmake` — update `REF` (if needed) and set `SHA512` to `0`.
-Then install the port once; vcpkg will fail and print the correct SHA512 in the error output.
-Replace `0` with that value.
+Edit `ports/inflare/portfile.cmake` — update `REF` to the commit SHA for the new
+upstream tag. `vcpkg_from_git` requires a commit SHA here, not a tag name and not
+`0`.
+
+For example:
+
+```bash
+git ls-remote --tags --refs https://github.com/fogesque/inflare v0.2.2
+```
 
 **2. Commit the port changes**
 
@@ -94,14 +100,13 @@ upstream source version does not. Reset it to 0 whenever the upstream `version` 
 
 ## Authentication for private ports
 
-`inflare` is hosted in a private GitHub repository. vcpkg fetches it using a GitHub
-Personal Access Token with `repo` scope, read from the environment variable
-`INFLARE_GITHUB_TOKEN`.
+`inflare` is hosted in a private GitHub repository. vcpkg fetches it through
+`git`, so the machine running the build must already have GitHub credentials that
+can read `fogesque/inflare`.
 
 **Local development:**
 
 ```bash
-export INFLARE_GITHUB_TOKEN=<your-pat>
 cmake --preset ...
 ```
 
@@ -110,8 +115,9 @@ cmake --preset ...
 Store the token as a repository secret, then pass it to the build step:
 
 ```yaml
+- name: Configure Git credentials
+  run: git config --global url."https://x-access-token:${{ secrets.INFLARE_GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
 - name: Configure
-  env:
-    INFLARE_GITHUB_TOKEN: ${{ secrets.INFLARE_GITHUB_TOKEN }}
   run: cmake --preset ...
 ```
