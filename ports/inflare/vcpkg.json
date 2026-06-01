@@ -1,7 +1,7 @@
 {
     "name": "inflare",
     "version": "0.2.4",
-    "port-version": 3,
+    "port-version": 4,
     "description": "RDMA Streaming C++ Library. Requires NVIDIA DOCA SDK installed on the system (https://developer.nvidia.com/networking/doca).",
     "homepage": "https://github.com/fogesque/inflare",
     "license": "MIT",

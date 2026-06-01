@@ -100,24 +100,28 @@ upstream source version does not. Reset it to 0 whenever the upstream `version` 
 
 ## Authentication for private ports
 
-`inflare` is hosted in a private GitHub repository. vcpkg fetches it through
-`git`, so the machine running the build must already have GitHub credentials that
-can read `fogesque/inflare`.
+`inflare` is hosted in a private GitHub repository. The port reads a GitHub token
+from `INFLARE_GITHUB_TOKEN` and passes it to `git` through `GIT_ASKPASS`, so the
+build can run non-interactively from CMake, VS Code, or CI.
 
 **Local development:**
 
 ```bash
+export INFLARE_GITHUB_TOKEN=<your-token>
 cmake --preset ...
 ```
 
+When configuring from VS Code, make sure the VS Code process itself has this
+environment variable. A token exported in a separate terminal is not visible to an
+already-running VS Code window.
+
 **GitHub Actions:**
 
-Store the token as a repository secret, then pass it to the build step:
+Store the token as a repository secret, then pass it to the configure step:
 
 ```yaml
-- name: Configure Git credentials
-  run: git config --global url."https://x-access-token:${{ secrets.INFLARE_GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
-
 - name: Configure
+  env:
+    INFLARE_GITHUB_TOKEN: ${{ secrets.INFLARE_GITHUB_TOKEN }}
   run: cmake --preset ...
 ```
