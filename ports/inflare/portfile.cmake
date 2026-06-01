@@ -1,7 +1,7 @@
 vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
     URL "https://github.com/fogesque/inflare"
-    REF e09a791a1507d7c3f4f80ebbe04e5726de4eeae3
+    REF 0
     HEAD_REF main
 )
 
