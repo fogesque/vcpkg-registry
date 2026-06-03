@@ -20,12 +20,13 @@ set(ENV{GIT_TERMINAL_PROMPT} "0")
 vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
     URL "https://github.com/fogesque/inflare"
-    REF 72dbad5ffe2e3258af9241826399e2478399fae3
+    REF b60e1ff7a15e5cb05c9c6e3068a1c4eccc339e35
     HEAD_REF main
 )
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS                                                                                                                                                                                                    
     FEATURES
+        logging ENABLE_LOGGING  
         gpunetio BUILD_GPUNETIO                                                                                                                                                                                                                             
 ) 
 
