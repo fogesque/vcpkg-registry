@@ -20,7 +20,7 @@ set(ENV{GIT_TERMINAL_PROMPT} "0")
 vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
     URL "https://github.com/fogesque/inflare"
-    REF adc149dced3d398f40654ce15f1f0973218ff3ed
+    REF 72dbad5ffe2e3258af9241826399e2478399fae3
     HEAD_REF main
 )
 
