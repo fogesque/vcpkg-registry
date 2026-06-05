@@ -1,7 +1,10 @@
-set(INFLARE_REF "b60e1ff7a15e5cb05c9c6e3068a1c4eccc339e35")
+# Inflare CMake Portfile 
 
+# Fetch Inflare repository contents: GitHub / GitLab origins
+
+# Find GitHub read token
 if(DEFINED ENV{INFLARE_GITHUB_TOKEN} AND NOT "$ENV{INFLARE_GITHUB_TOKEN}" STREQUAL "")
-    message(STATUS "inflare: fetching from GitHub via INFLARE_GITHUB_TOKEN")
+    message(STATUS "Inflare: fetching from GitHub...")
     set(_inflare_url "https://github.com/fogesque/inflare")
     set(_inflare_askpass [=[
 #!/bin/sh
@@ -11,20 +14,20 @@ case "$1" in
     *) printf '\n' ;;
 esac
 ]=])
-elseif((DEFINED ENV{GITLAB_PAT} AND NOT "$ENV{GITLAB_PAT}" STREQUAL "") OR
+elseif((DEFINED ENV{INFLARE_GITLAB_TOKEN} AND NOT "$ENV{INFLARE_GITLAB_TOKEN}" STREQUAL "") OR
        (DEFINED ENV{CI_JOB_TOKEN} AND NOT "$ENV{CI_JOB_TOKEN}" STREQUAL ""))
-    message(STATUS "inflare: fetching from GitLab mirror")
+    message(STATUS "Inflare: fetching from GitLab mirror repository...")
     set(_inflare_url "https://lab-1.spb.rdi-kvant.ru/dsp/kanon/kanon-sw/inflare.git")
     set(_inflare_askpass [=[
 #!/bin/sh
 case "$1" in
     *Username*)
-        if [ -n "$GITLAB_PAT" ]; then printf '%s\n' oauth2
+        if [ -n "$INFLARE_GITLAB_TOKEN" ]; then printf '%s\n' oauth2
         else printf '%s\n' gitlab-ci-token
         fi
         ;;
     *Password*)
-        if [ -n "$GITLAB_PAT" ]; then printf '%s\n' "$GITLAB_PAT"
+        if [ -n "$INFLARE_GITLAB_TOKEN" ]; then printf '%s\n' "$GITLAB_PAT"
         else printf '%s\n' "$CI_JOB_TOKEN"
         fi
         ;;
@@ -33,8 +36,7 @@ esac
 ]=])
 else()
     message(FATAL_ERROR
-        "inflare: no credentials available. "
-        "Set INFLARE_GITHUB_TOKEN (GitHub) or GITLAB_PAT / CI_JOB_TOKEN (GitLab) before building.")
+        "Inflare: no credentials available. Set INFLARE_GITHUB_TOKEN (GitHub) or INFLARE_GITLAB_TOKEN / CI_JOB_TOKEN (GitLab) before configuring.")
 endif()
 
 set(_inflare_askpass_file "${CURRENT_BUILDTREES_DIR}/inflare-git-askpass.sh")
@@ -45,10 +47,12 @@ file(CHMOD "${_inflare_askpass_file}"
 set(ENV{GIT_ASKPASS} "${_inflare_askpass_file}")
 set(ENV{GIT_TERMINAL_PROMPT} "0")
 
+set(_inflare_ref "b60e1ff7a15e5cb05c9c6e3068a1c4eccc339e35")
+
 vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
     URL "${_inflare_url}"
-    REF "${INFLARE_REF}"
+    REF "${_inflare_ref}"
     HEAD_REF main
 )
 
