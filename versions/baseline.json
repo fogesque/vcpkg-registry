@@ -10,7 +10,7 @@
         },
         "inflare": {
             "baseline": "0.2.6",
-            "port-version": 6
+            "port-version": 7
         }
     }
 }
