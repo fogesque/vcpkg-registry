@@ -1,9 +1,9 @@
-if(NOT DEFINED ENV{INFLARE_GITHUB_TOKEN} OR "$ENV{INFLARE_GITHUB_TOKEN}" STREQUAL "")
-    message(FATAL_ERROR "inflare is private; set INFLARE_GITHUB_TOKEN to a GitHub token with read access to fogesque/inflare.")
-endif()
+set(INFLARE_REF "b60e1ff7a15e5cb05c9c6e3068a1c4eccc339e35")
 
-set(_inflare_git_askpass "${CURRENT_BUILDTREES_DIR}/inflare-git-askpass.sh")
-file(WRITE "${_inflare_git_askpass}" [=[
+if(DEFINED ENV{INFLARE_GITHUB_TOKEN} AND NOT "$ENV{INFLARE_GITHUB_TOKEN}" STREQUAL "")
+    message(STATUS "inflare: fetching from GitHub via INFLARE_GITHUB_TOKEN")
+    set(_inflare_url "https://github.com/fogesque/inflare")
+    set(_inflare_askpass [=[
 #!/bin/sh
 case "$1" in
     *Username*) printf '%s\n' x-access-token ;;
@@ -11,24 +11,52 @@ case "$1" in
     *) printf '\n' ;;
 esac
 ]=])
-file(CHMOD "${_inflare_git_askpass}"
+elseif((DEFINED ENV{GITLAB_PAT} AND NOT "$ENV{GITLAB_PAT}" STREQUAL "") OR
+       (DEFINED ENV{CI_JOB_TOKEN} AND NOT "$ENV{CI_JOB_TOKEN}" STREQUAL ""))
+    message(STATUS "inflare: fetching from GitLab mirror")
+    set(_inflare_url "https://lab-1.spb.rdi-kvant.ru/dsp/kanon/kanon-sw/inflare.git")
+    set(_inflare_askpass [=[
+#!/bin/sh
+case "$1" in
+    *Username*)
+        if [ -n "$GITLAB_PAT" ]; then printf '%s\n' oauth2
+        else printf '%s\n' gitlab-ci-token
+        fi
+        ;;
+    *Password*)
+        if [ -n "$GITLAB_PAT" ]; then printf '%s\n' "$GITLAB_PAT"
+        else printf '%s\n' "$CI_JOB_TOKEN"
+        fi
+        ;;
+    *) printf '\n' ;;
+esac
+]=])
+else()
+    message(FATAL_ERROR
+        "inflare: no credentials available. "
+        "Set INFLARE_GITHUB_TOKEN (GitHub) or GITLAB_PAT / CI_JOB_TOKEN (GitLab) before building.")
+endif()
+
+set(_inflare_askpass_file "${CURRENT_BUILDTREES_DIR}/inflare-git-askpass.sh")
+file(WRITE "${_inflare_askpass_file}" "${_inflare_askpass}")
+file(CHMOD "${_inflare_askpass_file}"
     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
-set(ENV{GIT_ASKPASS} "${_inflare_git_askpass}")
+set(ENV{GIT_ASKPASS} "${_inflare_askpass_file}")
 set(ENV{GIT_TERMINAL_PROMPT} "0")
 
 vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
-    URL "https://github.com/fogesque/inflare"
-    REF b60e1ff7a15e5cb05c9c6e3068a1c4eccc339e35
+    URL "${_inflare_url}"
+    REF "${INFLARE_REF}"
     HEAD_REF main
 )
 
-vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS                                                                                                                                                                                                    
+vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     FEATURES
-        logging ENABLE_LOGGING  
-        gpunetio BUILD_GPUNETIO                                                                                                                                                                                                                             
-) 
+        logging ENABLE_LOGGING
+        gpunetio BUILD_GPUNETIO
+)
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
