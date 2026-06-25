@@ -73,11 +73,102 @@ vcpkg_cmake_configure(
         ${FEATURE_OPTIONS}
 )
 
-vcpkg_cmake_install()
-vcpkg_cmake_config_fixup(CONFIG_PATH lib/cmake/inflare)
+vcpkg_cmake_build(TARGET inflare)
 
-file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
-file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
+file(INSTALL "${SOURCE_PATH}/inflare/include/" DESTINATION "${CURRENT_PACKAGES_DIR}/include")
+
+set(_inflare_release_library "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/libinflare.a")
+set(_inflare_debug_library "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/libinflare.a")
+
+if(EXISTS "${_inflare_release_library}")
+    file(INSTALL "${_inflare_release_library}" DESTINATION "${CURRENT_PACKAGES_DIR}/lib")
+endif()
+
+if(NOT VCPKG_BUILD_TYPE AND EXISTS "${_inflare_debug_library}")
+    file(INSTALL "${_inflare_debug_library}" DESTINATION "${CURRENT_PACKAGES_DIR}/debug/lib")
+elseif(VCPKG_BUILD_TYPE STREQUAL "debug" AND EXISTS "${_inflare_debug_library}")
+    file(INSTALL "${_inflare_debug_library}" DESTINATION "${CURRENT_PACKAGES_DIR}/debug/lib")
+endif()
+
+if(NOT EXISTS "${CURRENT_PACKAGES_DIR}/lib/libinflare.a" AND
+   NOT EXISTS "${CURRENT_PACKAGES_DIR}/debug/lib/libinflare.a")
+    message(FATAL_ERROR "Inflare library archive was not produced by the build")
+endif()
+
+set(_inflare_optional_find_dependencies "")
+set(_inflare_optional_link_libraries "")
+set(_inflare_optional_compile_definitions "")
+
+if("logging" IN_LIST FEATURES)
+    string(APPEND _inflare_optional_find_dependencies "find_dependency(kvalog CONFIG REQUIRED)\n")
+    string(APPEND _inflare_optional_link_libraries " kvalog::kvalog")
+    string(APPEND _inflare_optional_compile_definitions " INFLARE_ENABLE_LOGGING")
+endif()
+
+if("gpunetio" IN_LIST FEATURES)
+    string(APPEND _inflare_optional_find_dependencies "find_dependency(CUDAToolkit REQUIRED)\n")
+    string(APPEND _inflare_optional_link_libraries " CUDA::cudart")
+    string(APPEND _inflare_optional_compile_definitions " INFLARE_ENABLE_CUDA")
+endif()
+
+file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/share/${PORT}")
+
+set(_inflare_config_in "${CURRENT_BUILDTREES_DIR}/inflareConfig.cmake.in")
+file(WRITE "${_inflare_config_in}" [=[
+include(CMakeFindDependencyMacro)
+
+find_dependency(asio CONFIG REQUIRED)
+find_dependency(errors CONFIG REQUIRED)
+@_inflare_optional_find_dependencies@
+find_library(IBVERBS_LIBRARY ibverbs REQUIRED)
+
+get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
+
+if(NOT TARGET inflare::inflare)
+    add_library(inflare::inflare STATIC IMPORTED)
+
+    set(_inflare_link_libraries asio::asio errors::errors "${IBVERBS_LIBRARY}"@_inflare_optional_link_libraries@)
+    set(_inflare_compile_definitions@_inflare_optional_compile_definitions@)
+
+    set_target_properties(inflare::inflare PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+        INTERFACE_LINK_LIBRARIES "${_inflare_link_libraries}"
+        INTERFACE_COMPILE_FEATURES cxx_std_23
+    )
+
+    if(_inflare_compile_definitions)
+        set_property(TARGET inflare::inflare PROPERTY INTERFACE_COMPILE_DEFINITIONS "${_inflare_compile_definitions}")
+    endif()
+
+    if(EXISTS "${_IMPORT_PREFIX}/lib/libinflare.a")
+        set_property(TARGET inflare::inflare APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+        set_target_properties(inflare::inflare PROPERTIES
+            IMPORTED_LOCATION "${_IMPORT_PREFIX}/lib/libinflare.a"
+            IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/libinflare.a"
+        )
+    endif()
+
+    if(EXISTS "${_IMPORT_PREFIX}/debug/lib/libinflare.a")
+        set_property(TARGET inflare::inflare APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+        set_target_properties(inflare::inflare PROPERTIES
+            IMPORTED_LOCATION_DEBUG "${_IMPORT_PREFIX}/debug/lib/libinflare.a"
+        )
+    endif()
+endif()
+]=])
+
+configure_file(
+    "${_inflare_config_in}"
+    "${CURRENT_PACKAGES_DIR}/share/${PORT}/inflareConfig.cmake"
+    @ONLY
+)
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    "${CURRENT_PACKAGES_DIR}/share/${PORT}/inflareConfigVersion.cmake"
+    VERSION "0.3.2"
+    COMPATIBILITY SameMajorVersion
+)
 
 file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/usage" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
