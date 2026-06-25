@@ -1,11 +1,15 @@
-Library Inflare requires NVIDIA DOCA SDK v3.2.0 installation
-and was tested only on Linux Ubuntu 24.04 Kernel 6.8.0-31
+Inflare provides RDMA streaming primitives for CPU memory, CUDA GPU memory,
+and synchronized GPU server chains. CUDA support is enabled by the gpunetio
+feature and requires a compatible CUDA/GPUDirect RDMA platform.
 
-Library Inflare provides CMake targets:
+Inflare provides CMake targets:
 
     find_package(inflare CONFIG REQUIRED)
     target_link_libraries(main PRIVATE inflare::inflare)
 
-For direct header inclusion:
+Common public headers:
 
-    #include <inflare/core/device.hpp>
+    #include <inflare/cpunetio/cpu_rdma_client.hpp>
+    #include <inflare/gpunetio/gpu_rdma_client.hpp>
+    #include <inflare/gpunetio/gpu_rdma_server.hpp>
+    #include <inflare/gpunetio/gpu_rdma_stream_chain.hpp>

@@ -1,7 +1,7 @@
 {
     "name": "inflare",
     "version": "0.3.2",
-    "port-version": 0,
+    "port-version": 1,
     "description": "RDMA Streaming C++ Library",
     "homepage": "https://github.com/fogesque/inflare",
     "license": "MIT",
@@ -24,7 +24,7 @@
     ],
     "features": {
         "gpunetio": {
-            "description": "Build GPU RDMA streaming module (requires CUDA 13+)"
+            "description": "Build CUDA/GPU RDMA streaming support (requires CUDA Toolkit and GPUDirect-capable platform)"
         },
         "logging": {
             "description": "Enable Inflare logging macros and public logging API",

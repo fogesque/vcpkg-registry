@@ -27,7 +27,7 @@ case "$1" in
         fi
         ;;
     *Password*)
-        if [ -n "$INFLARE_GITLAB_TOKEN" ]; then printf '%s\n' "$GITLAB_PAT"
+        if [ -n "$INFLARE_GITLAB_TOKEN" ]; then printf '%s\n' "$INFLARE_GITLAB_TOKEN"
         else printf '%s\n' "$CI_JOB_TOKEN"
         fi
         ;;
@@ -59,7 +59,7 @@ vcpkg_from_git(
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     FEATURES
         logging ENABLE_LOGGING
-        gpunetio BUILD_GPUNETIO
+        gpunetio BUILD_CUDA
 )
 
 vcpkg_cmake_configure(
@@ -67,7 +67,7 @@ vcpkg_cmake_configure(
     OPTIONS
         -DENABLE_LOGGING=OFF
         -DENABLE_DATAPATH_LOGGING=OFF
-        -DBUILD_GPUNETIO=OFF
+        -DBUILD_CUDA=OFF
         -DBUILD_TESTS=OFF
         -DBUILD_SAMPLES=OFF
         ${FEATURE_OPTIONS}
