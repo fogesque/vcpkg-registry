@@ -47,7 +47,7 @@ file(CHMOD "${_inflare_askpass_file}"
 set(ENV{GIT_ASKPASS} "${_inflare_askpass_file}")
 set(ENV{GIT_TERMINAL_PROMPT} "0")
 
-set(_inflare_ref "b286557d76e2701e1ae1ad4c79b4f8d9d2dc3b1a")
+set(_inflare_ref "4a17bfb850c40f211c64a8bf07b2b6940ace4db4")
 
 vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
